@@ -14,8 +14,8 @@ namespace SimpleEncryptor
             var keyGenerator = new keyGenerator();
             var key = keyGenerator.generateEncryptionKey(passphrase);
 
-            FileStream fp = new FileStream(fileLocation, FileMode.Open, FileAccess.Read);
-            FileStream encryptedFileStream = new FileStream(encryptedOutFileLocation, FileMode.Create);
+            FileStream fileStreamInputFile = new FileStream(fileLocation, FileMode.Open, FileAccess.Read);
+            FileStream fileStreamOutputFile = new FileStream(encryptedOutFileLocation, FileMode.Create);
 
             using (Aes aes = Aes.Create())
             {
@@ -25,19 +25,18 @@ namespace SimpleEncryptor
                 aes.IV = Encoding.UTF8.GetBytes("1234567812345678");  // first block only
 
                 ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-                CryptoStream cryptoStream = new CryptoStream(encryptedFileStream, encryptor, CryptoStreamMode.Write);
+                CryptoStream cryptoStream = new CryptoStream(fileStreamOutputFile, encryptor, CryptoStreamMode.Write);
 
                 byte[] buffer = new byte[1024];
                 int read;
 
                 try
                 {
-                    while ((read = fp.Read(buffer, 0, buffer.Length)) > 0)
+                    while ((read = fileStreamInputFile.Read(buffer, 0, buffer.Length)) > 0)
                     {
                         cryptoStream.Write(buffer, 0, read);
                     }
                     cryptoStream.FlushFinalBlock();
-
                 }
                 catch (Exception ex)
                 {
@@ -45,8 +44,8 @@ namespace SimpleEncryptor
                 }
                 finally
                 {
-                    fp.Close();
-                    encryptedFileStream.Close();
+                    fileStreamInputFile.Close();
+                    fileStreamOutputFile.Close();
                 }
             }
         }

@@ -9,13 +9,13 @@ namespace SimpleEncryptor
 {
     internal class Decryptor
     {
-        public static void decrypt(string cipherFileLocation, string decryptedOutFileLocation, string passphrase)
+        public static void decrypt(string fileLocation, string decryptedOutFileLocation, string passphrase)
         {
             var keyGenerator = new keyGenerator();
             var key = keyGenerator.generateEncryptionKey(passphrase);
 
-            FileStream fp = new FileStream(cipherFileLocation, FileMode.Open, FileAccess.Read);
-            FileStream decryptedFileStream = new FileStream(decryptedOutFileLocation, FileMode.Create);
+            FileStream fileStreamInputFile = new FileStream(fileLocation, FileMode.Open, FileAccess.Read);
+            FileStream fileStreamOutputFile = new FileStream(decryptedOutFileLocation, FileMode.Create);
 
             using (Aes aes = Aes.Create())
             {
@@ -25,7 +25,7 @@ namespace SimpleEncryptor
                 aes.IV = Encoding.UTF8.GetBytes("1234567812345678");  // first block only
 
                 ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-                CryptoStream cryptoStream = new CryptoStream(fp, decryptor, CryptoStreamMode.Read);
+                CryptoStream cryptoStream = new CryptoStream(fileStreamInputFile, decryptor, CryptoStreamMode.Read);
 
                 try
                 {
@@ -34,8 +34,8 @@ namespace SimpleEncryptor
 
                     while ((read = cryptoStream.Read(buffer, 0, buffer.Length)) > 0)
                     {
-                        decryptedFileStream.Write(buffer, 0, read);
-                        decryptedFileStream.Flush();
+                        fileStreamOutputFile.Write(buffer, 0, read);
+                        fileStreamOutputFile.Flush();
                     }
                 }
                 catch (Exception ex)
@@ -44,8 +44,8 @@ namespace SimpleEncryptor
                 }
                 finally
                 {
-                    fp.Close();
-                    decryptedFileStream.Close();
+                    fileStreamInputFile.Close();
+                    fileStreamOutputFile.Close();
                 }
             }
         }
