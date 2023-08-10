@@ -19,7 +19,6 @@ namespace SimpleEncryptor
 
             using (Aes aes = Aes.Create())
             {
-                var exitApplicationOnIncorrectPassword = false;
                 aes.Key = key;
                 aes.Mode = CipherMode.CBC;
                 aes.Padding = PaddingMode.PKCS7;
@@ -43,7 +42,6 @@ namespace SimpleEncryptor
                 catch (CryptographicException)
                 {
                     Console.WriteLine("[!] Incorrect Passphrase");
-                    exitApplicationOnIncorrectPassword = true;
                 }
                 catch (Exception ex)
                 {
@@ -51,12 +49,6 @@ namespace SimpleEncryptor
                 }
                 finally
                 {
-                    if (exitApplicationOnIncorrectPassword)
-                    {
-                        fileStreamInputFile.Dispose();
-                        fileStreamOutputFile.Dispose();
-                        Environment.Exit(1);
-                    }
                     fileStreamInputFile.Close();
                     fileStreamOutputFile.Close();
                 }
