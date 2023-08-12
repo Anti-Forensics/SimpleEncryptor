@@ -68,6 +68,17 @@
                 {
                     break;
                 }
+                else if (passphraseChar == (char)ConsoleKey.Backspace)
+                {
+                    try
+                    {
+                        passphrase = passphrase.Remove(passphrase.Length - 1);
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        continue;
+                    }
+                }
                 else
                 {
                     passphrase += passphraseChar;
